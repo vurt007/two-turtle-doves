@@ -38,14 +38,38 @@ def get_event():
     'isBase64Encoded': False
 }
 
-
-def test_update_patient():
+def test_update_patient_nochanges():
     get = get_patient()
     patient = json.loads(get['body'])
     event = get_event()
-    patient['postcode'] = 'test'
     event['body'] = json.dumps(patient)
-    event['body'] = json.dumps({"address": {"lines": ["1 Trevelyan Square", "Boar Lane", "City Centre", "Leeds", "West Yorkshire"], "postcode": "LS1 6AE"}, "tels": [{"type": "home", "number": "01632960587"}, {"type": "home", "number": "01632960587"}]})
     result = lambda_handler(event)
+    assert result['statusCode'] == 304
+
+
+def test_update_postcode():
+    get = get_patient()
+    patient = json.loads(get['body'])
+    event = get_event()
+    current_postcode = patient['address']['postcode']
+    new_postcode = 'WF1 2JJ' if current_postcode != 'WF1 2JJ' else 'LS1 4JL'
+    patient['address']['postcode'] = 'WF1 2JJ' if current_postcode != 'WF1 2JJ' else 'LS1 4JL'
+    event['body'] = json.dumps(patient)
+    result = lambda_handler(event)
+    assert result['statusCode'] == 200
     actual = json.loads(result['body'])
-    assert actual['postcode'] == 'test'
+    assert actual['address']['postcode'] == new_postcode
+
+
+def test_update_patient_address():
+    get = get_patient()
+    patient = json.loads(get['body'])
+    event = get_event()
+    line_0 = patient['address']['lines'][0]
+    new_line_0 = 'fake1' if line_0 != 'fake1' else 'fake2'
+    patient['address']['lines'][0] = new_line_0
+    event['body'] = json.dumps(patient)
+    result = lambda_handler(event)
+    assert result['statusCode'] == 200
+    actual = json.loads(result['body'])
+    assert actual['address']['lines'][0] == new_line_0
