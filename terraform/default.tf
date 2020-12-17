@@ -51,17 +51,17 @@ resource "aws_lambda_permission" "default" {
 
 }
 
-
-resource "aws_apigatewayv2_route" "default" {
-  api_id    = aws_apigatewayv2_api.doves.id
-  route_key = "$default"
-}
-
-
-resource "aws_apigatewayv2_integration" "default" {
-  api_id           = aws_apigatewayv2_api.doves.id
-  integration_type = "AWS_PROXY"
-  integration_method        = "POST"
-  integration_uri           = aws_lambda_function.default.invoke_arn
-
-}
+//
+//resource "aws_apigatewayv2_route" "default" {
+//  api_id    = aws_apigatewayv2_api.doves.id
+//  route_key = "$default"
+//}
+//
+//
+//resource "aws_apigatewayv2_integration" "default" {
+//  api_id           = aws_apigatewayv2_api.doves.id
+//  integration_type = "AWS_PROXY"
+//  integration_method        = "POST"
+//  integration_uri           = aws_lambda_function.default.invoke_arn
+//
+//}
